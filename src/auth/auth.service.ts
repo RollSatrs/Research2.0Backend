@@ -5,6 +5,7 @@ import { usersTable } from 'src/db/schema';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { LoginDto } from './dto/login.dto';
 import { db } from 'src';
+import { eq } from 'drizzle-orm';
 
 @Injectable()
 export class AuthService {
@@ -29,10 +30,27 @@ export class AuthService {
   }
 
   async login(dto: LoginDto) {
+    console.log("login")
     try {
+      const result = await db.select()
+        .from(usersTable)
+        . where(eq(usersTable.email, dto.email))
+        .limit(1)
 
+      const user = result[0]
+      if(!user){
+        throw new UnauthorizedException('Email не найден');
+      }
+        const isMatch = await bcrypt.compare(dto.password, user[0].password);
+
+      if (!isMatch) {
+        throw new UnauthorizedException('Неверный пароль'); // 401
+      }
+    
+      return { message: 'Успешный вход' }; // 200
     } catch (err) {
-
+      console.log("ERROR: ",err)
+      throw new BadRequestException("ошибка лютая")
     }
   }
 }
