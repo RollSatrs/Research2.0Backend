@@ -1,4 +1,4 @@
-import { integer, pgTable, varchar, timestamp, text, uuid } from "drizzle-orm/pg-core";
+import { pgTable, varchar, timestamp, text, uuid } from "drizzle-orm/pg-core";
 
 export const usersTable = pgTable("users", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -15,9 +15,9 @@ export const searchesTable = pgTable("searches", {
   created_at: timestamp("created_at").defaultNow().notNull(),
 });
 
-export const articlesTable = pgTable("articles",{
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  search_id: integer().notNull().references(() => searchesTable.id),
+export const articlesTable = pgTable("articles", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  search_id: uuid("search_id").notNull().references(() => searchesTable.id),
   title: text("title").notNull(),
   url: text("url").notNull(),
   authors: text("authors").notNull(),
